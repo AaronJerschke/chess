@@ -11,4 +11,6 @@ board.printBoard(currentBoard)
 #println("attacked squares:")
 #board.printBoardMarkings(knight.attackedSquares(currentBoard, [1, 7]))
 
-board.printBoardMarkings(moves.attackedSquares(currentBoard, true))
+#board.printBoardMarkings(moves.attackedSquares(currentBoard, true))
+
+println(moves.isChecked(currentBoard, true))

@@ -1,0 +1,3 @@
+module bishop
+
+end
