@@ -3,20 +3,15 @@ module knight
 function legalMoves(board, square)
     #all attacked squares that are not occupied by a friendly piece
     legalMoves = []
-    if isuppercase(board[square[1], square[2]])
-        for move in attackedSquares(board, square)
-            if !isuppercase(board[move[1], move[2]])
-                append!(legalMoves, [move])
-            end
-        end
-    elseif islowercase(board[square[1], square[2]])
-        for move in attackedSquares(board, square)
-            if !islowercase(board[move[1], move[2]])
-                append!(legalMoves, [move])
-            end
+    
+    isWhite = isuppercase(board[square[1], square[2]])
+
+    for move in attackedSquares(board, square)
+        if isuppercase(board[move[1], move[2]]) != isWhite || board[move[1], move[2]] == '.'
+            append!(legalMoves, [move])
         end
     end
-    #check if move puts own king in check
+
     return legalMoves
 end
 

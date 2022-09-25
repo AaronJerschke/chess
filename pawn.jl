@@ -2,7 +2,7 @@ module pawn
 
 function legalMoves(board, square)
     legalMoves = []
-    if board[square[1], square[2]] == 'P'
+    if isuppercase(board[square[1], square[2]])
         if board[square[1] - 1, square[2]] == '.'
             append!(legalMoves, [[square[1] - 1, square[2]]])
             if board[square[1] - 2, square[2]] == '.' && square[1] == 7
@@ -19,7 +19,7 @@ function legalMoves(board, square)
                 append!(legalMoves, [[square[1] - 1, square[2] + 1]])
             end
         end
-    elseif board[square[1], square[2]] == 'p'
+    else
         if board[square[1] + 1, square[2]] == '.'
             append!(legalMoves, [[square[1] + 1, square[2]]])
             if board[square[1] + 2, square[2]] == '.' && square[1] == 2
@@ -37,7 +37,7 @@ function legalMoves(board, square)
             end
         end
     end
-    #check if move puts own king in check
+    
     return legalMoves
 end
 
