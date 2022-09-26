@@ -1,28 +1,31 @@
-include("board.jl")
 include("moves.jl")
 
-currentBoard = startBoard
+currentBoard = copy(customBoard2)
+enPassantBoard = copy(emptyBoard)
 
-gameOver = false
 whiteToMove = true
-while !gameOver
+while true
     println("Current board:")
     printBoard(currentBoard)
+    
+    if whiteToMove && isMate(currentBoard, true)
+        print("Black wins by checkmate.")
+        break
+    elseif !whiteToMove && isMate(currentBoard, false)
+        print("White wins by checkmate.")
+        break
+    end
 
     if whiteToMove
         print("Please enter a move for white: ")
-        move = interpretMoveNotation(currentBoard, readline(), true)
-        safeMove!(currentBoard, move[1], move[2])
     else
         print("Please enter a move for black: ")
-        move = interpretMoveNotation(currentBoard, readline(), false)
-        safeMove!(currentBoard, move[1], move[2])
     end
 
-    global whiteToMove = !whiteToMove
+    move = interpretMoveNotation(currentBoard, String(readline()), whiteToMove)
+    if length(move) == 1
+        if safeMove!(currentBoard, move[1], move[2], enPassantBoard) == 0
+            global whiteToMove = !whiteToMove
+        end
+    end
 end
-
-#moves.safeMove!(currentBoard, [7,5], [6,4])
-#println("legal moves for piece on ", coordsToChessSquare([6, 5]), ":")
-#printBoardMarkings(legalMoves(currentBoard, [6, 5]))
-#println(isMate(currentBoard, false))

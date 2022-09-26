@@ -1,6 +1,6 @@
 module pawn
 
-function legalMoves(board, square)
+function legalMoves(board, square, enPassantBoard)
     legalMoves = []
     if isuppercase(board[square[1], square[2]])
         if board[square[1] - 1, square[2]] == '.'
@@ -10,12 +10,12 @@ function legalMoves(board, square)
             end
         end
         if square[2] > 1
-            if islowercase(board[square[1] - 1, square[2] - 1])
+            if islowercase(board[square[1] - 1, square[2] - 1]) || enPassantBoard[square[1] - 1, square[2] - 1] == 'X'
                 append!(legalMoves, [[square[1] - 1, square[2] - 1]])
             end
         end
         if square[2] < 8
-            if islowercase(board[square[1] - 1,square[2] + 1])
+            if islowercase(board[square[1] - 1,square[2] + 1]) || enPassantBoard[square[1] - 1,square[2] + 1] == 'X'
                 append!(legalMoves, [[square[1] - 1, square[2] + 1]])
             end
         end
@@ -27,12 +27,12 @@ function legalMoves(board, square)
             end
         end
         if square[2] > 1
-            if isuppercase(board[square[1] + 1, square[2] - 1])
+            if isuppercase(board[square[1] + 1, square[2] - 1]) || enPassantBoard[square[1] + 1, square[2] - 1] == 'X'
                 append!(legalMoves, [[square[1] + 1, square[2] - 1]])
             end
         end
         if square[2] < 8
-            if isuppercase(board[square[1] + 1, square[2] + 1])
+            if isuppercase(board[square[1] + 1, square[2] + 1]) || enPassantBoard[square[1] + 1, square[2] + 1] == 'X'
                 append!(legalMoves, [[square[1] + 1, square[2] + 1]])
             end
         end
