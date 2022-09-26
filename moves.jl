@@ -11,6 +11,43 @@ import .bishop
 import .rook
 import .queen
 
+function interpretMoveNotation(board, move, white)
+    move = []
+
+    if isnothing(match(r"[a-h][1-8]", move)) #e4
+        square = chessSquareToCoords(move)
+        if white
+            for i in square[1]+1:7
+                if board[square[1], square[2]] == 'P'
+                    move = [[i, square[2]], square]
+                end
+            end
+        else
+            for i in square[1]-1:-1:2
+                if board[square[1], square[2]] == 'p'
+                    move = [[i, square[2]], square]
+                end
+            end
+        end
+    #elseif !isnothing(match(r"[a-h]x[a-h][1-8]", move)) #dxc4
+
+    #elseif !isnothing(match(r"[KQBNRP][a-h][1-8]", move)) #Qh5
+
+    #elseif !isnothing(match(r"[KQBNRP]x[a-h][1-8]", move)) #Qxd4
+
+    #elseif !isnothing(match(r"[QBNRP][a-h][a-h][1-8]", move)) #Rdf8
+
+    #elseif !isnothing(match(r"[QBNRP][1-8][a-h][1-8]", move)) #R1a3
+
+    #elseif !isnothing(match(r"[QBNRP][a-h][1-8]x?[a-h][1-8]", move)) #Qh4(x)e3
+
+    else
+        println("Move notation was not recongnized.")
+    end
+
+    return move
+end
+
 function legalMoves(board, square)
     tempLegalMoves = []
     if board[square[1], square[2]] == 'K' || board[square[1], square[2]] == 'k'
@@ -28,7 +65,6 @@ function legalMoves(board, square)
     end
 
     #check if move puts own king in check
-    
     legalMoves = []
     if !isempty(tempLegalMoves)
         isWhite = isuppercase(board[square[1], square[2]])
@@ -144,4 +180,29 @@ function isChecked(board, white)
     end
 
     return check
+end
+
+function isMate(board, white)
+    mate = true
+
+    if !isChecked(board, white)
+        mate = false
+    end
+    
+    for i in 1:8
+        for j in 1:8
+            if isuppercase(board[i, j]) == white
+                moves = legalMoves(board, [i, j])
+                for move in moves
+                    tempBoard = copy(board)
+                    move!(tempBoard, [i, j], move)
+                    if !isChecked(tempBoard, white)
+                        mate = false
+                    end
+                end
+            end
+        end
+    end
+
+    return mate
 end

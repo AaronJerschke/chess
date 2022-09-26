@@ -1,19 +1,28 @@
 include("board.jl")
 include("moves.jl")
 
-currentBoard = customBoard2
-println("current board:")
-printBoard(currentBoard)
-#println("legal moves:")
-#board.printBoardMarkings(queen.legalMoves(currentBoard, [4, 8]))
-#println("attacked squares:")
-#board.printBoardMarkings(knight.attackedSquares(currentBoard, [1, 7]))
+currentBoard = startBoard
 
-#board.printBoardMarkings(moves.attackedSquares(currentBoard, false))
+gameOver = false
+whiteToMove = true
+while !gameOver
+    println("Current board:")
+    printBoard(currentBoard)
 
-#println(moves.isChecked(currentBoard, false))
+    if whiteToMove
+        print("Please enter a move for white: ")
+        move = interpretMoveNotation(currentBoard, readline(), true)
+        safeMove!(currentBoard, move[1], move[2])
+    else
+        print("Please enter a move for black: ")
+        move = interpretMoveNotation(currentBoard, readline(), false)
+        safeMove!(currentBoard, move[1], move[2])
+    end
+
+    global whiteToMove = !whiteToMove
+end
 
 #moves.safeMove!(currentBoard, [7,5], [6,4])
-println("legal moves for piece on ", coordsToChess([6, 5]), ":")
-printBoardMarkings(legalMoves(currentBoard, [6, 5]))
-#printBoard(currentBoard)
+#println("legal moves for piece on ", coordsToChessSquare([6, 5]), ":")
+#printBoardMarkings(legalMoves(currentBoard, [6, 5]))
+#println(isMate(currentBoard, false))

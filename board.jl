@@ -61,50 +61,50 @@ function printBoardMarkings(squares) #takes array of squares and marks them with
     printBoard(tempBoard)
 end
 
-function coordsToChess(square)
+function coordsToChessSquare(square)
     file = ""
     
     if square[2] == 1
-        file = "A"
+        file = "a"
     elseif square[2] == 2
-        file = "B"
+        file = "b"
     elseif square[2] == 3
-        file = "C"
+        file = "c"
     elseif square[2] == 4
-        file = "D"
+        file = "d"
     elseif square[2] == 5
-        file = "E"
+        file = "e"
     elseif square[2] == 6
-        file = "F"
+        file = "f"
     elseif square[2] == 7
-        file = "G"
+        file = "g"
     elseif square[2] == 8
-        file = "H"
+        file = "h"
     end
 
     return string(file, 9 - square[1])
 end
 
-function chessToCoords(chessSquare)
+function chessSquareToCoords(chessSquare)
     x = 9 - parse(Int, chessSquare[2])
 
     y = 0
     file = chessSquare[1]
-    if file == 'A'
+    if file == 'a'
         y = 1
-    elseif file == 'B'
+    elseif file == 'b'
         y = 2
-    elseif file == 'C'
+    elseif file == 'c'
         y = 3
-    elseif file == 'D'
+    elseif file == 'd'
         y = 4
-    elseif file == 'E'
+    elseif file == 'e'
         y = 5
-    elseif file == 'F'
+    elseif file == 'f'
         y = 6
-    elseif file == 'G'
+    elseif file == 'g'
         y = 7
-    elseif file == 'H'
+    elseif file == 'h'
         y = 8
     end
 
