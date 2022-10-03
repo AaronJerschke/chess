@@ -14,8 +14,8 @@ import .queen
 
 function interpretMoveNotation(board, moveChess, white)
     move = []
-
-    if !isnothing(match(r"^[a-h][1-8]$", moveChess)) #e4
+    
+    if !isnothing(match(r"^[a-h][2-7]$", moveChess)) #e4
         goalSquare = chessSquareToCoords(moveChess)
         if white
             for i in goalSquare[1]+1:7
@@ -31,13 +31,32 @@ function interpretMoveNotation(board, moveChess, white)
             end
         end
 
-    elseif !isnothing(match(r"^[a-h]x[a-h][1-8]$", moveChess)) #dxc4
+    elseif !isnothing(match(r"^[a-h][18]=[QRBN]$", moveChess)) #e8=Q
+        goalSquare = chessSquareToCoords(moveChess[1:2])
+        if white && moveChess[2] == '8'
+            move = [[goalSquare[1] + 1, goalSquare[2]], goalSquare]
+        elseif !white && moveChess[2] == '1'
+            move = [[goalSquare[1] - 1, goalSquare[2]], goalSquare]
+        end
+
+    elseif !isnothing(match(r"^[a-h]x[a-h][2-7]$", moveChess)) #dxc4
         if white
             startSquare = string(moveChess[1], parse(Int, moveChess[4]) - 1)
             goalSquare = moveChess[3:4]
             move = [chessSquareToCoords(startSquare),chessSquareToCoords(goalSquare)]
         else
             startSquare = string(moveChess[1], parse(Int, moveChess[4]) + 1)
+            goalSquare = moveChess[3:4]
+            move = [chessSquareToCoords(startSquare),chessSquareToCoords(goalSquare)]
+        end
+
+    elseif !isnothing(match(r"^[a-h]x[a-h][18]=[QRBN]$", moveChess)) #dxc8=Q
+        if white && moveChess[4] == '8'
+            startSquare = string(moveChess[1], 7)
+            goalSquare = moveChess[3:4]
+            move = [chessSquareToCoords(startSquare),chessSquareToCoords(goalSquare)]
+        elseif !white && moveChess[4] == '1'
+            startSquare = string(moveChess[1], 2)
             goalSquare = moveChess[3:4]
             move = [chessSquareToCoords(startSquare),chessSquareToCoords(goalSquare)]
         end
@@ -49,8 +68,8 @@ function interpretMoveNotation(board, moveChess, white)
 
         for i in 1:8
             for j in 1:8
-                if board[i, j] == uppercase(moveChess[1]) || board[i, j] == lowercase(moveChess[1])
-                    if goalSquare in legalMoves(board, [i, j], emptyBoard)
+                if (board[i, j] == uppercase(moveChess[1]) && white) || (board[i, j] == lowercase(moveChess[1]) && !white)
+                    if goalSquare in legalMovesPiece(board, [i, j], emptyBoard)
                         append!(possibleStartSquares, [[i, j]])
                     end
                 end
@@ -72,8 +91,8 @@ function interpretMoveNotation(board, moveChess, white)
 
         for i in 1:8
             for j in 1:8
-                if (board[i, j] == uppercase(moveChess[1]) || board[i, j] == lowercase(moveChess[1])) && chessSquareToCoords(string(moveChess[2], "1"))[2] == j
-                    if goalSquare in legalMoves(board, [i, j], emptyBoard)
+                if ((board[i, j] == uppercase(moveChess[1]) && white) || (board[i, j] == lowercase(moveChess[1]) && !white)) && chessSquareToCoords(string(moveChess[2], "1"))[2] == j
+                    if goalSquare in legalMovesPiece(board, [i, j], emptyBoard)
                         append!(possibleStartSquares, [[i, j]])
                     end
                 end
@@ -90,13 +109,13 @@ function interpretMoveNotation(board, moveChess, white)
 
     elseif !isnothing(match(r"^[QBNRP][1-8]x?[a-h][1-8]$", moveChess)) #R1(x)a3
         goalSquare = chessSquareToCoords(moveChess[end-1:end])
-            
+        
         possibleStartSquares = []
 
         for i in 1:8
             for j in 1:8
-                if (board[i, j] == uppercase(moveChess[1]) || board[i, j] == lowercase(moveChess[1])) && chessSquareToCoords(string("a", moveChess[2]))[2] == i
-                    if goalSquare in legalMoves(board, [i, j], emptyBoard)
+                if ((board[i, j] == uppercase(moveChess[1]) && white) || (board[i, j] == lowercase(moveChess[1]) && !white)) && chessSquareToCoords(string("a", moveChess[2]))[1] == i
+                    if goalSquare in legalMovesPiece(board, [i, j], emptyBoard)
                         append!(possibleStartSquares, [[i, j]])
                     end
                 end
@@ -115,7 +134,7 @@ function interpretMoveNotation(board, moveChess, white)
         startSquare = chessSquareToCoords(moveChess[2:3])
         goalSquare = chessSquareToCoords(moveChess[end-1:end])
 
-        if board[startSquare[1], startSquare[2]] == uppercase(moveChess[1]) || board[startSquare[1], startSquare[2]] == lowercase(moveChess[1])
+        if (board[startSquare[1], startSquare[2]] == uppercase(moveChess[1]) && white) || (board[startSquare[1], startSquare[2]] == lowercase(moveChess[1]) && !white)
             move = [startSquare, goalSquare]
         end
 
@@ -126,9 +145,17 @@ function interpretMoveNotation(board, moveChess, white)
         move = [startSquare, goalSquare]
 
     elseif moveChess == "O-O"
-        println("Castling has not yet been implemented.")
+        if white
+            move = [[8, 5], [8, 7]]
+        else
+            move = [[1, 5], [1, 7]]
+        end
     elseif moveChess == "O-O-O"
-        println("Castling has not yet been implemented.")
+        if white
+            move = [[8, 5], [8, 3]]
+        else
+            move = [[1, 5], [1, 3]]
+        end
     else
         println("Error: Move notation was not recongnized.")
     end
@@ -175,12 +202,13 @@ function move!(board, startSquare, goalSquare)
     return nothing
 end
 
-function safeMove!(board, startSquare, goalSquare, enPassantBoard)
+function safeMove!(board, startSquare, goalSquare, enPassantBoard, rightToCastle)
     returnVal = 0
 
     legalMoves = legalMovesPiece(board, startSquare, enPassantBoard)
-
+    
     if goalSquare in legalMoves
+        #En Passant Logic
         if enPassantBoard[goalSquare[1], goalSquare[2]] == 'X'
             if board[startSquare[1], startSquare[2]] == 'P'
                 board[goalSquare[1] + 1, goalSquare[2]] = '.'
@@ -207,8 +235,34 @@ function safeMove!(board, startSquare, goalSquare, enPassantBoard)
 
         move!(board, startSquare, goalSquare)
     else
-        println("This is not a legal move")
-        returnVal = -1
+        if board[startSquare[1], startSquare[2]] == 'K' && rightToCastle[1] && !isChecked(board, true)
+            attacked = attackedSquares(board, false)
+            if goalSquare == [8, 7] && board[8, 8] == 'R' && !([8, 6] in attacked || [8, 7] in attacked)
+                move!(board, [8, 8], [8, 6])
+                move!(board, [8, 5], [8, 7])
+            elseif goalSquare == [8, 3] && board[8, 1] == 'R' && !([8, 4] in attacked || [8, 3] in attacked || [8, 2] in attacked)
+                move!(board, [8, 1], [8, 4])
+                move!(board, [8, 5], [8, 3])
+            else
+                println("This is not a legal move")
+                returnVal = -1
+            end
+        elseif board[startSquare[1], startSquare[2]] == 'k' && rightToCastle[2] && !isChecked(board, false)
+            attacked = attackedSquares(board, true)
+            if goalSquare == [1, 7] && board[1, 8] == 'r' && !([1, 6] in attacked || [1, 7] in attacked)
+                move!(board, [1, 8], [1, 6])
+                move!(board, [1, 5], [1, 7])
+            elseif goalSquare == [1, 3] && board[1, 1] == 'r' && !([1, 4] in attacked || [1, 3] in attacked || [1, 2] in attacked)
+                move!(board, [1, 1], [1, 4])
+                move!(board, [1, 5], [1, 3])
+            else
+                println("This is not a legal move")
+                returnVal = -1
+            end
+        else
+            println("This is not a legal move")
+            returnVal = -1
+        end
     end
     return returnVal
 end
@@ -290,8 +344,8 @@ function isMate(board, white)
     
     for i in 1:8
         for j in 1:8
-            if isuppercase(board[i, j]) == white
-                moves = legalMoves(board, [i, j], emptyBoard)
+            if isletter(board[i, j]) && isuppercase(board[i, j]) == white
+                moves = legalMovesPiece(board, [i, j], emptyBoard)
                 for move in moves
                     tempBoard = copy(board)
                     move!(tempBoard, [i, j], move)
@@ -304,4 +358,8 @@ function isMate(board, white)
     end
 
     return mate
+end
+
+function promotePawn!(board, square, piece)
+    board[square[1], square[2]] = piece
 end

@@ -5,8 +5,10 @@ function legalMoves(board, square, enPassantBoard)
     if isuppercase(board[square[1], square[2]])
         if board[square[1] - 1, square[2]] == '.'
             append!(legalMoves, [[square[1] - 1, square[2]]])
-            if board[square[1] - 2, square[2]] == '.' && square[1] == 7
-                append!(legalMoves, [[square[1] - 2, square[2]]])
+            if square[1] == 7
+                if board[square[1] - 2, square[2]] == '.'
+                    append!(legalMoves, [[square[1] - 2, square[2]]])
+                end
             end
         end
         if square[2] > 1
@@ -22,8 +24,10 @@ function legalMoves(board, square, enPassantBoard)
     else
         if board[square[1] + 1, square[2]] == '.'
             append!(legalMoves, [[square[1] + 1, square[2]]])
-            if board[square[1] + 2, square[2]] == '.' && square[1] == 2
-                append!(legalMoves, [[square[1] + 2, square[2]]])
+            if square[1] == 2
+                if board[square[1] + 2, square[2]] == '.'
+                    append!(legalMoves, [[square[1] + 2, square[2]]])
+                end
             end
         end
         if square[2] > 1
