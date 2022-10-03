@@ -335,7 +335,7 @@ function isChecked(board, white)
     return check
 end
 
-function isMate(board, white)
+function isMate(board, white, enPassantBoard)
     mate = true
 
     if !isChecked(board, white)
@@ -345,7 +345,7 @@ function isMate(board, white)
     for i in 1:8
         for j in 1:8
             if isletter(board[i, j]) && isuppercase(board[i, j]) == white
-                moves = legalMovesPiece(board, [i, j], emptyBoard)
+                moves = legalMovesPiece(board, [i, j], enPassantBoard)
                 for move in moves
                     tempBoard = copy(board)
                     move!(tempBoard, [i, j], move)
@@ -358,6 +358,22 @@ function isMate(board, white)
     end
 
     return mate
+end
+
+function isStaleMate(board, white, enPassantBoard)
+    staleMate = true
+    for i in 1:8
+        for j in 1:8
+            piece = board[i, j]
+            if piece != '.' && isuppercase(piece) == white
+                if legalMovesPiece(board, [i, j], enPassantBoard) != []
+                    staleMate = false
+                    break
+                end
+            end
+        end
+    end
+    return staleMate
 end
 
 function promotePawn!(board, square, piece)

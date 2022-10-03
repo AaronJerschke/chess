@@ -1,21 +1,30 @@
 include("moves.jl")
 
-currentBoard = copy(customBoard2)
+currentBoard = copy(startBoard)
 enPassantBoard = copy(emptyBoard)
 
 whiteToMove = false
 rightToCastle = [true true]
 
 while true
-    println("Current board:")
     printBoard(currentBoard)
     
-    if whiteToMove && isMate(currentBoard, true)
-        print("Black wins by checkmate.")
-        break
-    elseif !whiteToMove && isMate(currentBoard, false)
-        print("White wins by checkmate.")
-        break
+    if whiteToMove
+        if isMate(currentBoard, true, enPassantBoard)
+            println("Black wins by checkmate.")
+            break
+        elseif isStaleMate(currentBoard, true, enPassantBoard)
+            println("Stalemate")
+            break
+        end
+    elseif !whiteToMove
+        if isMate(currentBoard, false, enPassantBoard)
+            println("White wins by checkmate.")
+            break
+        elseif isStaleMate(currentBoard, false, enPassantBoard)
+            println("Stalemate")
+            break
+        end
     end
 
     if whiteToMove
